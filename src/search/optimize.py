@@ -53,7 +53,7 @@ def optimize_fusion_weights(
 if __name__ == "__main__":
     from ._samples import documents
     # Example usage
-    hybrid_search = HybridSearchSystem()
+    hybrid_search = HybridSearchSystem(embedding_model="docker.io/embeddinggemma:300M-Q8_0")
     hybrid_search.index_documents(documents)
 
     test_queries = [

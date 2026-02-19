@@ -86,6 +86,7 @@ def demonstrate_hybrid_search():
         fusion_method="rrf",
         dense_weight=0.6,
         sparse_weight=0.4,
+        embedding_model="docker.io/embeddinggemma:300M-Q8_0"
         # embedding_model="all-mpnet-base-v2"
     )
     

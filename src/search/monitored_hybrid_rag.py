@@ -27,7 +27,7 @@ class MonitoredHybridSearch(HybridSearchSystem):
 if __name__ == "__main__":
     from ._samples import documents
     # Example usage
-    monitored_search = MonitoredHybridSearch()
+    monitored_search = MonitoredHybridSearch(embedding_model="docker.io/embeddinggemma:300M-Q8_0")
     monitored_search.index_documents(documents)
 
     test_queries = [
