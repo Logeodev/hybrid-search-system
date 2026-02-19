@@ -14,7 +14,7 @@ class HybridSearchSystem:
         Initialize hybrid search system
         
         Args:
-            embedding_model: Sentence transformer model name
+            embedding_model: Sentence transformer model name. For example, change to all-mpnet-base-v2, more powerful but larger than all-MiniLM-L6-v2
             fusion_method: "rrf" or "weighted_sum"
             dense_weight: Weight for dense retrieval scores
             sparse_weight: Weight for sparse retrieval scores
@@ -79,23 +79,14 @@ def demonstrate_hybrid_search():
     """Show hybrid search in action"""
     
     # Sample documents
-    documents = [
-        "Machine learning algorithms require large datasets for training.",
-        "Deep learning models use neural networks with multiple layers.",
-        "Natural language processing enables computers to understand text.",
-        "Computer vision systems can identify objects in images.",
-        "Reinforcement learning agents learn through trial and error.",
-        "Supervised learning uses labeled data to train models.",
-        "Unsupervised learning discovers patterns in unlabeled data.",
-        "Transfer learning adapts pre-trained models to new tasks."
-    ]
+    from ._samples import documents
     
     # Initialize hybrid search
     hybrid_search = HybridSearchSystem(
         fusion_method="rrf",
         dense_weight=0.6,
         sparse_weight=0.4,
-        # embedding_model="all-mpnet-base-v2" # Optionally use a different embedding model, all-mpnet-base-v2 is more powerful but larger than all-MiniLM-L6-v2
+        # embedding_model="all-mpnet-base-v2"
     )
     
     # Index documents

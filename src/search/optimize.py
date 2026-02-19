@@ -49,3 +49,23 @@ def optimize_fusion_weights(
             best_weights = (dense_weight, sparse_weight)
     
     return best_weights
+
+if __name__ == "__main__":
+    from ._samples import documents
+    # Example usage
+    hybrid_search = HybridSearchSystem()
+    hybrid_search.index_documents(documents)
+
+    test_queries = [
+        "What are the requirements for machine learning algorithms?",
+        "How do deep learning models work?",
+        "What is natural language processing?"
+    ]
+    ground_truth = [
+        [0],  # Relevant document indices for query 1
+        [1],  # Relevant document indices for query 2
+        [2]   # Relevant document indices for query 3
+    ]
+    optimal_weights = optimize_fusion_weights(hybrid_search, test_queries, ground_truth)
+    print(f"Optimal Weights: Dense={optimal_weights[0]:.2f}, Sparse={optimal_weights[1]:.2f}")
+    

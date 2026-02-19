@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import List, Tuple
-import numpy as np
+from numpy import ndarray
 
 class BM25Retriever:
     def __init__(self, k1: float = 1.2, b: float = 0.75):
@@ -13,7 +13,7 @@ class BM25Retriever:
             token_pattern=r'\b\w+\b'
         )
         self.documents = []
-        self.doc_vectors = None
+        self.doc_vectors : ndarray[ndarray] = None
         self.avg_doc_length = 0
     
     def fit_documents(self, documents: List[str]):
