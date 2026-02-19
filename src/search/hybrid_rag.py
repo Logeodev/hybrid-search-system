@@ -1,12 +1,12 @@
 from retriever import DenseRetriever, BM25Retriever
 from score import ScoreFusion
-from typing import List, Tuple
+from typing import List, Tuple, Literal
 
 class HybridSearchSystem:
     def __init__(
         self, 
         embedding_model: str = "all-MiniLM-L6-v2",
-        fusion_method: str = "rrf",
+        fusion_method: Literal["rrf", "weighted_sum"] = "rrf",
         dense_weight: float = 0.7,
         sparse_weight: float = 0.3
     ):
@@ -94,7 +94,8 @@ def demonstrate_hybrid_search():
     hybrid_search = HybridSearchSystem(
         fusion_method="rrf",
         dense_weight=0.6,
-        sparse_weight=0.4
+        sparse_weight=0.4,
+        # embedding_model="all-mpnet-base-v2" # Optionally use a different embedding model, all-mpnet-base-v2 is more powerful but larger than all-MiniLM-L6-v2
     )
     
     # Index documents
