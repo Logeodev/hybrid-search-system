@@ -1,5 +1,6 @@
 # Python 3.10
 sentence-transformers
+scikit-learn
 redis
 tensorflow<2.11
 numpy<2
