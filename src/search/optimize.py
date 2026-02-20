@@ -1,6 +1,9 @@
 from typing import List, Tuple
-from search import HybridSearchSystem
 from numpy import arange
+from os import getenv
+import default_env
+
+from search import HybridSearchSystem
 
 def optimize_fusion_weights(
     hybrid_search: HybridSearchSystem,
@@ -52,8 +55,13 @@ def optimize_fusion_weights(
 
 if __name__ == "__main__":
     from ._samples import documents
+    from helpers.config import EmbedderConfig
+
     # Example usage
-    hybrid_search = HybridSearchSystem(embedding_model="docker.io/embeddinggemma:300M-Q8_0")
+    hybrid_search = HybridSearchSystem(embedder_config=EmbedderConfig(
+        model_name=getenv("EMBEDDING_MODEL"), 
+        embedding_module='local-dmr')
+    )
     hybrid_search.index_documents(documents)
 
     test_queries = [

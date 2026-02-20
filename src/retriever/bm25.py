@@ -4,7 +4,9 @@ from numpy import ndarray
 
 class BM25Retriever:
     def __init__(self, k1: float = 1.2, b: float = 0.75):
-        """Initialize BM25 retriever with tuning parameters"""
+        """Initialize BM25 retriever with tuning parameters.
+        k1 controls term frequency saturation, while b controls length normalization.
+        Use **BM25Config() from helpers.config to easily create the config dict."""
         self.k1 = k1  # Term frequency saturation point
         self.b = b    # Length normalization factor
         self.vectorizer = TfidfVectorizer(

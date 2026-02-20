@@ -2,6 +2,8 @@ from typing import List, Tuple, Dict, Any
 import time
 from search import HybridSearchSystem
 from score import PerformanceMonitor
+from os import getenv
+import default_env
 
 # Integrate monitoring into hybrid search
 class MonitoredHybridSearch(HybridSearchSystem):
@@ -26,8 +28,12 @@ class MonitoredHybridSearch(HybridSearchSystem):
     
 if __name__ == "__main__":
     from ._samples import documents
+    from helpers.config import EmbedderConfig
     # Example usage
-    monitored_search = MonitoredHybridSearch(embedding_model="docker.io/embeddinggemma:300M-Q8_0")
+    monitored_search = MonitoredHybridSearch(embedder_config=EmbedderConfig(
+        model_name=getenv("EMBEDDING_MODEL"), 
+        embedding_module='local-dmr'
+        ))
     monitored_search.index_documents(documents)
 
     test_queries = [

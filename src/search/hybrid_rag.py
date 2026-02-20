@@ -1,29 +1,31 @@
+from typing import List, Tuple, Literal
+from os import getenv
+import default_env
+
 from retriever import DenseRetriever, BM25Retriever
 from score import ScoreFusion
-from typing import List, Tuple, Literal
+from helpers.config import HybridSearchConfig, EmbedderConfig, BM25Config
 
 class HybridSearchSystem:
     def __init__(
         self, 
-        embedding_model: str = "all-MiniLM-L6-v2",
-        fusion_method: Literal["rrf", "weighted_sum"] = "rrf",
-        dense_weight: float = 0.7,
-        sparse_weight: float = 0.3
+        config: HybridSearchConfig = HybridSearchConfig(),
+        embedder_config: EmbedderConfig = EmbedderConfig(),
+        bm25_config: BM25Config = BM25Config()
     ):
         """
         Initialize hybrid search system
         
         Args:
-            embedding_model: Sentence transformer model name. For example, change to all-mpnet-base-v2, more powerful but larger than all-MiniLM-L6-v2
-            fusion_method: "rrf" or "weighted_sum"
-            dense_weight: Weight for dense retrieval scores
-            sparse_weight: Weight for sparse retrieval scores
+            config: Configuration for hybrid search (fusion method, weights, etc.)
+            embedder_config: Configuration for dense retriever's embedding model
+            bm25_config: Configuration for BM25 retriever parameters
         """
-        self.dense_retriever = DenseRetriever(embedding_model)
-        self.sparse_retriever = BM25Retriever()
-        self.fusion_method = fusion_method
-        self.dense_weight = dense_weight
-        self.sparse_weight = sparse_weight
+        self.dense_retriever = DenseRetriever(**embedder_config)
+        self.sparse_retriever = BM25Retriever(**bm25_config)
+        self.fusion_method = config.fusion_method
+        self.dense_weight = config.dense_weight
+        self.sparse_weight = config.sparse_weight
         self.score_fusion = ScoreFusion()
         
     def index_documents(self, documents: List[str]):
@@ -73,21 +75,19 @@ class HybridSearchSystem:
     def get_documents_by_indices(self, indices: List[int]) -> List[str]:
         """Retrieve document texts by their indices"""
         return [self.dense_retriever.documents[i] for i in indices]
-
-# Example usage
-def demonstrate_hybrid_search():
-    """Show hybrid search in action"""
     
+
+if __name__ == "__main__":
     # Sample documents
     from ._samples import documents
     
+    embed_conf = EmbedderConfig(
+        model_name=getenv("EMBEDDING_MODEL"), embedding_module='local-dmr')
+    search_conf = HybridSearchConfig(dense_weight=0.6, sparse_weight=0.4)
     # Initialize hybrid search
     hybrid_search = HybridSearchSystem(
-        fusion_method="rrf",
-        dense_weight=0.6,
-        sparse_weight=0.4,
-        embedding_model="docker.io/embeddinggemma:300M-Q8_0"
-        # embedding_model="all-mpnet-base-v2"
+        config=search_conf,
+        embedder_config=embed_conf
     )
     
     # Index documents
@@ -103,6 +103,3 @@ def demonstrate_hybrid_search():
         doc_text = documents[doc_idx]
         print(f"{rank}. Score: {score:.4f}")
         print(f"   Document: {doc_text}\n")
-
-if __name__ == "__main__":
-    demonstrate_hybrid_search()
