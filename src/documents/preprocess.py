@@ -12,8 +12,7 @@ def preprocess_documents(documents: List[str]) -> List[str]:
         # Handle special characters
         doc = re.sub(r'[^\w\s\.\,\!\?\-]', '', doc)
 
-        # Final strip
-        doc = doc.strip()
+        doc = doc.lower().strip()  # Normalize case and trim
         
         # Ensure minimum length
         if len(doc) > 50:  # Skip very short documents

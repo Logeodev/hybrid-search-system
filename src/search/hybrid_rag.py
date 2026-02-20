@@ -9,9 +9,9 @@ from helpers.config import HybridSearchConfig, EmbedderConfig, BM25Config
 class HybridSearchSystem:
     def __init__(
         self, 
-        config: HybridSearchConfig = HybridSearchConfig(),
-        embedder_config: EmbedderConfig = EmbedderConfig(),
-        bm25_config: BM25Config = BM25Config()
+        config: HybridSearchConfig = None,
+        embedder_config: EmbedderConfig = None,
+        bm25_config: BM25Config = None
     ):
         """
         Initialize hybrid search system
@@ -21,6 +21,12 @@ class HybridSearchSystem:
             embedder_config: Configuration for dense retriever's embedding model
             bm25_config: Configuration for BM25 retriever parameters
         """
+        if config is None:
+            config = HybridSearchConfig()
+        if embedder_config is None:
+            embedder_config = EmbedderConfig()
+        if bm25_config is None:
+            bm25_config = BM25Config()
         self.dense_retriever = DenseRetriever(**embedder_config)
         self.sparse_retriever = BM25Retriever(**bm25_config)
         self.fusion_method = config.fusion_method

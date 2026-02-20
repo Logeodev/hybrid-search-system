@@ -2,7 +2,6 @@ from typing import List, Tuple, Dict, Any
 import time
 from search import HybridSearchSystem
 from score import PerformanceMonitor
-from os import getenv
 import default_env
 
 # Integrate monitoring into hybrid search
@@ -28,7 +27,10 @@ class MonitoredHybridSearch(HybridSearchSystem):
     
 if __name__ == "__main__":
     from ._samples import documents
+    from os import getenv
     from helpers.config import EmbedderConfig
+    from helpers.print import print_query_results
+
     # Example usage
     monitored_search = MonitoredHybridSearch(embedder_config=EmbedderConfig(
         model_name=getenv("EMBEDDING_MODEL"), 
@@ -44,7 +46,7 @@ if __name__ == "__main__":
     
     for query in test_queries:
         results = monitored_search.search(query, top_k=5)
-        print(f"Results for '{query}': {results}")
+        print_query_results(query, results, monitored_search.sparse_retriever.documents)
     
     performance_stats = monitored_search.get_performance_stats()
     print("Performance Statistics:", performance_stats)
