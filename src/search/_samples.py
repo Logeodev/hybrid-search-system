@@ -4,34 +4,17 @@ documents = [
     "Natural language processing enables computers to understand text.",
     "Computer vision systems can identify objects in images.",
     "Reinforcement learning agents learn through trial and error.",
-    "Supervised learning uses labeled data to train models.",
-    "Unsupervised learning discovers patterns in unlabeled data.",
-    "Transfer learning adapts pre-trained models to new tasks.",
-    "Generative models can create new data similar to the training set.",
-    "Convolutional neural networks are effective for image recognition.",
-    "Recurrent neural networks are used for sequential data like text and time series.",
-    "Transformers have revolutionized natural language processing.",
-    "Support vector machines are a type of supervised learning algorithm.",
-    "Decision trees are a simple yet powerful classification method.",
-    "Random forests are an ensemble of decision trees.",
-    "Gradient boosting machines build models sequentially to improve performance.",
-    "K-means clustering is a popular unsupervised learning algorithm.",
-    "Principal component analysis is used for dimensionality reduction.",
-    "Autoencoders are neural networks used for unsupervised learning of efficient codings.",
-    "Recurrent neural networks can suffer from vanishing gradients, which is why LSTM and GRU architectures were developed.",
-    "Attention mechanisms allow models to focus on relevant parts of the input when making predictions.",
-    "Adversarial training can improve the robustness of machine learning models against malicious inputs.",
-    "Hyperparameter tuning is crucial for optimizing the performance of machine learning models.",
-    "Cross-validation is a technique for assessing how the results of a statistical analysis will generalize to an independent dataset.",
-    "Ensemble methods combine multiple machine learning models to improve performance and reduce overfitting.",
-    "Regularization techniques like L1 and L2 can help prevent overfitting in machine learning models.",
-    "Dropout is a regularization technique that randomly drops units from the neural network during training to prevent overfitting.",
-    "Batch normalization is a technique to improve the training of deep neural networks by normalizing the inputs of each layer.",
-    "Data augmentation is a technique used to increase the diversity of training data without actually collecting new data.",
-    "Early stopping is a form of regularization used to avoid overfitting when training a machine learning model by stopping the training process if the performance on a validation set starts to degrade.",
-    "The bias-variance tradeoff is a fundamental concept in machine learning that describes the tradeoff between a model's ability to fit the training data (bias) and its ability to generalize to new data (variance).",
-    "Ensemble learning methods like bagging and boosting can significantly improve the performance of machine learning models by combining the predictions of multiple models.",
-    "The choice of evaluation metrics (e.g., accuracy, precision, recall, F1 score) depends on the specific problem and the type of data being analyzed in machine learning tasks.",
-    "Feature engineering is the process of using domain knowledge to create features that make machine learning algorithms work better.",
-    "Dimensionality reduction techniques like PCA and t-SNE can help visualize high-dimensional data and improve the performance of machine learning models by reducing the number of features.",
+    "Supervised learning uses labeled data to train models."
+]
+
+queries = [
+    "What are the requirements for machine learning algorithms?",
+    "How do deep learning models work?",
+    "What is natural language processing?"
+]
+
+ground_truth = [
+    {0, 5, 4},
+    {1, 4},
+    {2}
 ]

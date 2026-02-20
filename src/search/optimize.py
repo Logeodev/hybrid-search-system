@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Set
 from numpy import arange
 from os import getenv
 import default_env
@@ -8,8 +8,8 @@ from search import HybridSearchSystem
 def optimize_fusion_weights(
     hybrid_search: HybridSearchSystem,
     test_queries: List[str],
-    ground_truth: List[List[int]],
-    weight_range: Tuple[float, float] = (0.3, 0.8)
+    ground_truth: List[Set[int]],
+    weight_range: Tuple[float, float] = (0.2, 0.8)
 ) -> Tuple[float, float]:
     """
     Find optimal fusion weights using validation data
@@ -37,7 +37,7 @@ def optimize_fusion_weights(
         # Calculate average precision
         total_precision = 0
         for query, relevant_docs in zip(test_queries, ground_truth):
-            results = hybrid_search.search(query, top_k=10)
+            results = hybrid_search.search(query, top_k=len(relevant_docs))
             retrieved_docs = [doc_idx for doc_idx, _ in results]
             
             # Calculate precision at k
@@ -54,7 +54,7 @@ def optimize_fusion_weights(
     return best_weights
 
 if __name__ == "__main__":
-    from ._samples import documents
+    from ._samples import documents, ground_truth, queries as test_queries
     from helpers.config import EmbedderConfig
 
     # Example usage
@@ -64,16 +64,6 @@ if __name__ == "__main__":
     )
     hybrid_search.index_documents(documents)
 
-    test_queries = [
-        "What are the requirements for machine learning algorithms?",
-        "How do deep learning models work?",
-        "What is natural language processing?"
-    ]
-    ground_truth = [
-        [0],  # Relevant document indices for query 1
-        [1],  # Relevant document indices for query 2
-        [2]   # Relevant document indices for query 3
-    ]
     optimal_weights = optimize_fusion_weights(hybrid_search, test_queries, ground_truth)
     print(f"Optimal Weights: Dense={optimal_weights[0]:.2f}, Sparse={optimal_weights[1]:.2f}")
     

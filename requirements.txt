@@ -1,4 +1,5 @@
 # Python 3.10
+tabulate
 sentence-transformers
 scikit-learn
 langchain-openai
