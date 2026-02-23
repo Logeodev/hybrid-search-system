@@ -1,23 +1,15 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import List, Tuple
-from numpy import ndarray
-from .retriever import BaseRetriver
+from .base import BaseBM25Retriever
 
-class BM25Retriever(BaseRetriver):
+class BM25Retriever(BaseBM25Retriever):
     def __init__(self, k1: float = 1.2, b: float = 0.75):
-        """Initialize BM25 retriever with tuning parameters.
-        k1 controls term frequency saturation, while b controls length normalization.
-        Use **BM25Config() from helpers.config to easily create the config dict."""
-        self.k1 = k1  # Term frequency saturation point
-        self.b = b    # Length normalization factor
+        super().__init__(k1, b)
         self.vectorizer = TfidfVectorizer(
             lowercase=True,
             stop_words='english',
             token_pattern=r'\b\w+\b'
         )
-        self.documents = []
-        self.doc_vectors : ndarray[ndarray] = None
-        self.avg_doc_length = 0
     
     def fit_documents(self, documents: List[str]):
         """Prepare BM25 index from document collection"""

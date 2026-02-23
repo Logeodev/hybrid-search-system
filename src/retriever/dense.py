@@ -1,17 +1,8 @@
 import numpy as np
 from typing import List, Tuple
-from .embedder import Embedder
-from .retriever import BaseRetriver
+from .base import BaseDenseRetriever
 
-class DenseRetriever(BaseRetriver):
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2", **model_kwargs):
-        """Initialize dense retriever with embedding model
-        `model_kwargs` are passed to the Embedder class, use **EmbedderConfig() from helpers.config to easily create the config dict.
-        """
-        self.model = Embedder(model_name, **model_kwargs)
-        self.document_embeddings = None
-        self.documents = []
-    
+class DenseRetriever(BaseDenseRetriever):    
     def encode_documents(self, documents: List[str]) -> np.ndarray:
         """Convert documents to dense vectors"""
         self.documents = documents
