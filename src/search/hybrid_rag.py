@@ -1,14 +1,16 @@
-from typing import List, Tuple, Literal
+from typing import List, Tuple, Optional
 from os import getenv
 import default_env
 
-from retriever import DenseRetriever, BM25Retriever
+from retriever import DenseRetriever, BM25Retriever, BaseDenseRetriever, BaseBM25Retriever
 from score import ScoreFusion
 from helpers.config import HybridSearchConfig, EmbedderConfig, BM25Config
 
 class HybridSearchSystem:
     def __init__(
         self, 
+        dense_retriever: Optional[BaseDenseRetriever] = None,
+        sparse_retriever: Optional[BaseBM25Retriever] = None,
         config: HybridSearchConfig = None,
         embedder_config: EmbedderConfig = None,
         bm25_config: BM25Config = None
@@ -17,9 +19,12 @@ class HybridSearchSystem:
         Initialize hybrid search system
         
         Args:
+            dense_retriever: Pre-configured dense retriever instance
+            sparse_retriever: Pre-configured sparse retriever instance
             config: Configuration for hybrid search (fusion method, weights, etc.)
             embedder_config: Configuration for dense retriever's embedding model
             bm25_config: Configuration for BM25 retriever parameters
+        > The configurations objects will be ignored if the corresponding retriever instances are provided.
         """
         if config is None:
             config = HybridSearchConfig()
@@ -27,16 +32,18 @@ class HybridSearchSystem:
             embedder_config = EmbedderConfig()
         if bm25_config is None:
             bm25_config = BM25Config()
-        self.dense_retriever = DenseRetriever(**embedder_config)
-        self.sparse_retriever = BM25Retriever(**bm25_config)
+        self.dense_retriever = dense_retriever or DenseRetriever(**embedder_config)
+        self.sparse_retriever = sparse_retriever or BM25Retriever(**bm25_config)
         self.fusion_method = config.fusion_method
         self.dense_weight = config.dense_weight
         self.sparse_weight = config.sparse_weight
         self.score_fusion = ScoreFusion()
+        self.documents: List[str] = []
         
     def index_documents(self, documents: List[str]):
         """Index documents for both dense and sparse retrieval"""
         print(f"Indexing {len(documents)} documents...")
+        self.documents = documents
         
         # Index for dense retrieval
         self.dense_retriever.encode_documents(documents)
@@ -80,7 +87,7 @@ class HybridSearchSystem:
     
     def get_documents_by_indices(self, indices: List[int]) -> List[str]:
         """Retrieve document texts by their indices"""
-        return [self.dense_retriever.documents[i] for i in indices]
+        return [self.documents[i] for i in indices]
     
 
 if __name__ == "__main__":
