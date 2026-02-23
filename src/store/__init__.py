@@ -1,6 +1,3 @@
-import redis, struct
+from .redis import RedisController, to_binary
 
-def to_binary(vector):
-    return struct.pack('>' + 'f'*len(vector), *vector)
-
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+__all__ = ["RedisController", "to_binary"]
