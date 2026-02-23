@@ -1,8 +1,9 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import List, Tuple
 from numpy import ndarray
+from .retriever import BaseRetriver
 
-class BM25Retriever:
+class BM25Retriever(BaseRetriver):
     def __init__(self, k1: float = 1.2, b: float = 0.75):
         """Initialize BM25 retriever with tuning parameters.
         k1 controls term frequency saturation, while b controls length normalization.

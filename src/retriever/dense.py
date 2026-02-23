@@ -1,8 +1,9 @@
 import numpy as np
 from typing import List, Tuple
 from .embedder import Embedder
+from .retriever import BaseRetriver
 
-class DenseRetriever:
+class DenseRetriever(BaseRetriver):
     def __init__(self, model_name: str = "all-MiniLM-L6-v2", **model_kwargs):
         """Initialize dense retriever with embedding model
         `model_kwargs` are passed to the Embedder class, use **EmbedderConfig() from helpers.config to easily create the config dict.
