@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional
 
 from .base import BaseBM25Retriever
+from documents import Document
 from store import RedisController
 
 
@@ -25,23 +26,23 @@ class RedisBM25Retriever(BaseBM25Retriever):
         self.create_index = create_index
         self.fuzziness = fuzziness
 
-    def fit_documents(self, documents: List[str]):
+    def fit_documents(self, documents: List[Document]):
         self.documents = documents
 
         if self.create_index:
             self.redis.create_text_index(self.index_name, self.index_prefix)
 
         for idx, doc in enumerate(documents):
-            key = f"{self.index_prefix}{idx}"
+            key = f"{self.index_prefix}:{doc.idx}:{doc.chunk}"
             self.redis.add_document(
                 key,
                 {
-                    "metadata": str(idx),
-                    "content": doc,
+                    "metadata": f"{idx}/{doc.idx}/{doc.chunk}",
+                    "content": doc.text,
                 },
             )
 
-    def search(self, query: str, top_k: int = 10) -> List[Tuple[int, float]]:
+    def search(self, query: str, top_k: int = 10) -> List[Tuple[str, float]]:
         results = self.redis.search_text(
             self.index_name,
             query,
@@ -49,24 +50,4 @@ class RedisBM25Retriever(BaseBM25Retriever):
             fuzziness=self.fuzziness,
             scorer="BM25STD",
         )
-        return self._convert_results(results)
-
-    def _convert_results(self, results: List[Tuple[str, float]]) -> List[Tuple[int, float]]:
-        converted: List[Tuple[int, float]] = []
-        for key, score in results:
-            idx = self._key_to_index(key)
-            if idx is None:
-                continue
-            converted.append((idx, score))
-        return converted
-
-    def _key_to_index(self, key: str) -> Optional[int]:
-        if isinstance(key, bytes):
-            key = key.decode("utf-8", errors="ignore")
-        if not key.startswith(self.index_prefix):
-            return None
-        suffix = key[len(self.index_prefix):]
-        try:
-            return int(suffix)
-        except ValueError:
-            return None
+        return results

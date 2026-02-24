@@ -6,7 +6,7 @@ class ScoreFusion:
     
     @staticmethod
     def reciprocal_rank_fusion(
-        results_list: List[List[Tuple[int, float]]], 
+        results_list: List[List[Tuple[str, float]]], 
         k: int = 60
     ) -> List[Tuple[int, float]]:
         """
@@ -32,8 +32,8 @@ class ScoreFusion:
     
     @staticmethod
     def weighted_sum_fusion(
-        dense_results: List[Tuple[int, float]],
-        sparse_results: List[Tuple[int, float]],
+        dense_results: List[Tuple[str, float]],
+        sparse_results: List[Tuple[str, float]],
         dense_weight: float = 0.7,
         sparse_weight: float = 0.3
     ) -> List[Tuple[int, float]]:
@@ -69,7 +69,7 @@ class ScoreFusion:
         return [(doc_id, score) for doc_id, score in sorted_results]
     
     @staticmethod
-    def _normalize_scores(results: List[Tuple[int, float]]) -> Dict[int, float]:
+    def _normalize_scores(results: List[Tuple[str, float]]) -> Dict[int, float]:
         """Normalize scores to [0, 1] range"""
         if not results:
             return {}

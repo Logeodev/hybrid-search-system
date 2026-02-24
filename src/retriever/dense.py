@@ -1,15 +1,17 @@
 import numpy as np
 from typing import List, Tuple
+from documents import Document
 from .base import BaseDenseRetriever
 
 class DenseRetriever(BaseDenseRetriever):    
-    def encode_documents(self, documents: List[str]) -> np.ndarray:
+    def encode_documents(self, documents: List[Document]) -> np.ndarray:
         """Convert documents to dense vectors"""
         self.documents = documents
-        self.document_embeddings = np.array(self.model.encode(documents), copy=True)
+        texts = [doc.text for doc in documents]
+        self.document_embeddings = np.array(self.model.encode(texts), copy=True)
         return self.document_embeddings
     
-    def search(self, query: str, top_k: int = 10) -> List[Tuple[int, float]]:
+    def search(self, query: str, top_k: int = 10) -> List[Tuple[str, float]]:
         """Find most similar documents using cosine similarity"""
         query_embedding = np.array(self.model.encode(query))
         
@@ -22,6 +24,6 @@ class DenseRetriever(BaseDenseRetriever):
         
         # Get top-k results
         top_indices = np.argsort(similarities[0])[::-1][:top_k]
-        results = [(idx, similarities[0][idx]) for idx in top_indices]
+        results = [(str(idx), similarities[0][idx]) for idx in top_indices]
         
         return results

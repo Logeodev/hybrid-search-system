@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional
 
 from .base import BaseDenseRetriever
+from documents import Document
 from store import RedisController, to_binary
 
 
@@ -27,11 +28,16 @@ class RedisDenseRetriever(BaseDenseRetriever):
         self.distance_metric = distance_metric
         self.create_index = create_index
 
-    def encode_documents(self, documents: List[str]) -> List[List[float]]:
+    def encode_documents(self, documents: List[Document]) -> List[List[float]]:
         self.documents = documents
-        embeddings = self.model.encode(documents)
+        texts = [doc.text for doc in documents]
+        embeddings = self.model.encode(texts)
+        
         if not embeddings:
             return []
+        
+        for e, d in zip(embeddings, documents):
+            d.embedding = e
 
         if self.vector_dim is None:
             self.vector_dim = len(embeddings[0])
@@ -44,48 +50,28 @@ class RedisDenseRetriever(BaseDenseRetriever):
                 self.distance_metric,
             )
 
-        for idx, (doc, vector) in enumerate(zip(documents, embeddings)):
-            key = f"{self.index_prefix}{idx}"
+        for idx, doc in enumerate(documents):
+            key = f"{self.index_prefix}:{doc.idx}:{doc.chunk}"
             self.redis.add_document(
                 key,
                 {
-                    "metadata": str(idx),
-                    "content": doc,
-                    "embedding": to_binary(vector),
+                    "metadata": f"{idx}/{doc.idx}/{doc.chunk}",
+                    "content": doc.text,
+                    "embedding": to_binary(doc.embedding),
                 },
             )
 
         return embeddings
 
-    def search(self, query: str, top_k: int = 10) -> List[Tuple[int, float]]:
+    def search(self, query: str, top_k: int = 10) -> List[Tuple[str, float]]:
         query_vector = self._normalize_query_embedding(self.model.encode(query))
         results = self.redis.search_vector(self.index_name, query_vector, top_k)
-        return self._convert_results(results)
+        return results
 
     def _normalize_query_embedding(self, embedding) -> List[float]:
         if embedding and isinstance(embedding[0], list):
             return embedding[0]
         return embedding
-
-    def _convert_results(self, results: List[Tuple[str, float]]) -> List[Tuple[int, float]]:
-        converted: List[Tuple[int, float]] = []
-        for key, score in results:
-            idx = self._key_to_index(key)
-            if idx is None:
-                continue
-            converted.append((idx, self._normalize_score(score)))
-        return converted
-
-    def _key_to_index(self, key: str) -> Optional[int]:
-        if isinstance(key, bytes):
-            key = key.decode("utf-8", errors="ignore")
-        if not key.startswith(self.index_prefix):
-            return None
-        suffix = key[len(self.index_prefix):]
-        try:
-            return int(suffix)
-        except ValueError:
-            return None
 
     def _normalize_score(self, score: float) -> float:
         metric = self.distance_metric.upper()

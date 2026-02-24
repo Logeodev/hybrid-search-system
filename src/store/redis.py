@@ -49,12 +49,12 @@ class RedisController:
         if fuzziness < 0 or fuzziness > 3:
             raise ValueError("Fuzziness must be between 0 and 3")
         
-        fuzzy_wildcard = "%"*fuzziness if fuzziness > 0 else ""
+        fuzzy_wildcard = "" #if fuzziness == 0 else "%"*fuzziness
         query = f'@content:({fuzzy_wildcard}{query_text}{fuzzy_wildcard})'
         
         search_query = Query(query).paging(0, top_k)
         if scorer:
-            search_query = search_query.scorer(scorer)
+            search_query = search_query.scorer(scorer).with_scores()
 
         try:
             results = self.redis_client.ft(index_name).search(search_query)

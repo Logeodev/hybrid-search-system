@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 from numpy import ndarray
+from documents import Document
 from .embedder import Embedder
 
 class BaseRetriever(ABC):
     @abstractmethod
-    def search(self, query:str, top_k:int=5) -> List[Tuple[int, float]]:
+    def search(self, query:str, top_k:int=5) -> List[Tuple[str, float]]:
         pass
 
 class BaseDenseRetriever(BaseRetriever):
@@ -15,10 +16,10 @@ class BaseDenseRetriever(BaseRetriever):
         """
         self.model = Embedder(model_name, **model_kwargs)
         self.document_embeddings = None
-        self.documents = []
+        self.documents: List[Document] = []
 
     @abstractmethod
-    def encode_documents(self, documents: List[str]):
+    def encode_documents(self, documents: List[Document]):
         pass
 
 class BaseBM25Retriever(BaseRetriever):
@@ -28,10 +29,10 @@ class BaseBM25Retriever(BaseRetriever):
         Use **BM25Config() from helpers.config to easily create the config dict."""
         self.k1 = k1  # Term frequency saturation point
         self.b = b    # Length normalization factor
-        self.documents = []
+        self.documents: List[Document] = []
         self.doc_vectors : ndarray[ndarray] = None
         self.avg_doc_length = 0
 
     @abstractmethod
-    def fit_documents(self, documents: List[str]):
+    def fit_documents(self, documents: List[Document]):
         pass

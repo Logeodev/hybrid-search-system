@@ -1,4 +1,6 @@
-documents = [
+from documents import Document
+
+_raw_documents = [
     "Machine learning algorithms require large datasets for training.",
     "Deep learning models use neural networks with multiple layers.",
     "Natural language processing enables computers to understand text.",
@@ -6,6 +8,8 @@ documents = [
     "Reinforcement learning agents learn through trial and error.",
     "Supervised learning uses labeled data to train models."
 ]
+
+documents = [Document(idx=i, text=text) for i, text in enumerate(_raw_documents)]
 
 queries = [
     "What are the requirements for machine learning algorithms?",
