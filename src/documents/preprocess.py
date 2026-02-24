@@ -21,9 +21,24 @@ def preprocess_documents(documents: List[str], chunk_size:int=512) -> List[Docum
         
         # Ensure minimum length
         # if len(doc) > 50:  # Skip very short documents
-        for offset in range(0, len(doc), chunk_size):
-            chunk = doc[offset:min(offset+chunk_size, len(doc))]
-            if chunk:
-                processed.append(Document(idx=doc_idx, text=chunk, chunk=offset//chunk_size))
+        # Split document into sentences using regex
+        sentences = re.findall(r'[^.!?]+[.!?]?', doc)
+        chunk = ""
+        chunk_num = 0
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+            # If adding this sentence would exceed chunk_size, save current chunk
+            if len(chunk) + len(sentence) > chunk_size and chunk:
+                processed.append(
+                    Document(idx=doc_idx, text=chunk.strip(), chunk=chunk_num)
+                )
+                chunk_num += 1
+                chunk = ""
+            chunk += (sentence + " ")
+        # Add any remaining chunk
+        if chunk.strip():
+            processed.append(Document(idx=doc_idx, text=chunk.strip(), chunk=chunk_num))
     
     return processed
